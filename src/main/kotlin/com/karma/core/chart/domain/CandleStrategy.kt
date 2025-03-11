@@ -1,4 +1,4 @@
-package com.karma.core.domain
+package com.karma.core.chart.domain
 
 /**
  * 봉 판단 전략

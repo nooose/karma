@@ -1,4 +1,4 @@
-package com.karma.core.domain
+package com.karma.core.chart.domain
 
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.StringSpec
@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 class CandleTest : StringSpec({
 
     "음봉인지 확인한다." {
-        val candle = createCandleFixture(
+        val candle = candleFixture(
             openPrice = 150,
             closePrice = 100,
         )
@@ -18,7 +18,7 @@ class CandleTest : StringSpec({
     }
 
     "양봉인지 확인한다." {
-        val candle = createCandleFixture(
+        val candle = candleFixture(
             openPrice = 100,
             closePrice = 150,
         )
@@ -27,7 +27,7 @@ class CandleTest : StringSpec({
     }
 
     "도지인지 확인한다." {
-        val candle = createCandleFixture(
+        val candle = candleFixture(
             openPrice = 100,
             closePrice = 100,
         )
@@ -36,15 +36,16 @@ class CandleTest : StringSpec({
     }
 })
 
-fun createCandleFixture(
+fun candleFixture(
     openPrice: Int,
     closePrice: Int,
     highPrice: Double = 0.0,
     lowPrice: Double = 0.0,
+    createdAt: LocalDateTime = LocalDateTime.now(),
 ) = Candle(
     openPrice = openPrice.toDouble(),
     closePrice = closePrice.toDouble(),
     highPrice = highPrice,
     lowPrice = lowPrice,
-    dateTime = LocalDateTime.now()
+    createdAt = createdAt
 )

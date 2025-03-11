@@ -1,4 +1,4 @@
-package com.karma.core.domain
+package com.karma.core.chart.domain
 
 import java.time.LocalDateTime
 import kotlin.math.abs
@@ -11,7 +11,7 @@ data class Candle(
     val closePrice: Double,
     val highPrice: Double,
     val lowPrice: Double,
-    val dateTime: LocalDateTime,
+    val createdAt: LocalDateTime,
 ) {
 
     val isUp: Boolean get() = openPrice < closePrice
