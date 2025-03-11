@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: karma
+
+  r2dbc:
+    name: sa
+    password: password
+
+logging:
+  level:
+    org:
+      springframework:
+        http:
+          server:
+            reactive: TRACE
