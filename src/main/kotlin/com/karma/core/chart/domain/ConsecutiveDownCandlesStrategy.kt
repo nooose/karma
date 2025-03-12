@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component
  */
 @Component
 class ConsecutiveDownCandlesStrategy(
-    private val consecutiveCount: Int = 3
+    private val consecutiveCount: Int = 3,
+    override val title: String = "$consecutiveCount 연속 하락",
 ) : CandleStrategy {
     override fun isSatisfied(candles: List<Candle>): Boolean {
         return candles

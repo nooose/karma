@@ -35,6 +35,7 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 	implementation("io.github.oshai:kotlin-logging-jvm:$kotlinLoggingVersion")
 
+	implementation("io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64")
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("io.r2dbc:r2dbc-h2")
 

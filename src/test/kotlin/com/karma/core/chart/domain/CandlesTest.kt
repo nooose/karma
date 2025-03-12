@@ -4,6 +4,8 @@ import io.kotest.assertions.assertSoftly
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import java.time.LocalDateTime
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 class CandlesTest : StringSpec({
     val baseTime = LocalDateTime.of(2025, 1, 1, 10, 0, 0)
@@ -42,5 +44,8 @@ class CandlesTest : StringSpec({
 })
 
 fun candlesFixture(vararg candles: Candle): Candles {
-    return Candles(candles.toList())
+    return Candles(
+        interval = 0.toDuration(DurationUnit.MINUTES),
+        values = candles.toList(),
+    )
 }

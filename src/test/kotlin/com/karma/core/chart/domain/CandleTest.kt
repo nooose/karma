@@ -47,5 +47,5 @@ fun candleFixture(
     closePrice = closePrice.toDouble(),
     highPrice = highPrice,
     lowPrice = lowPrice,
-    createdAt = createdAt
+    createdAt = createdAt,
 )

@@ -1,18 +1,22 @@
 package com.karma.core.chart.domain
 
 import java.time.LocalDateTime
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 /**
  * 봉 목록 도메인 모델
  */
 class Candles(
+    val interval: Duration,
     values: List<Candle>,
 ) {
     val values: List<Candle> = values.sortedByDescending { it.createdAt }
     val latest: Candle
         get() = this.values.first()
     val withoutLatest: Candles
-        get() = Candles(this.values.drop(1))
+        get() = Candles(this.interval, this.values.drop(1))
     val isEmpty: Boolean
         get() = this.values.isEmpty()
 
@@ -38,10 +42,10 @@ class Candles(
     }
 
     override fun toString(): String {
-        return "$values"
+        return "[$interval]$values"
     }
 
     companion object {
-        val EMPTY = Candles(emptyList())
+        val EMPTY = Candles(0.toDuration(DurationUnit.MINUTES), emptyList())
     }
 }
