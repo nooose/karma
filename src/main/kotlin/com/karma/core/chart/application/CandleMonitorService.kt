@@ -39,7 +39,7 @@ class CandleMonitorService(
 
         val latestCandle = candles.latest
         markAsCompleted(candles)
-        val message = "[${this.strategy.title}](${candles.interval}) 발생, 현재 시가: ${latestCandle.openPrice}"
+        val message = "${this.strategy.title}-${candles.interval} 발생, 현재 시가: ${latestCandle.openPrice}"
         eventPublisher.publishEvent(BuySignalEvent(message))
     }
 
@@ -55,6 +55,21 @@ class CandleMonitorService(
 
     private fun markAsCompleted(candles: Candles) {
         lastCompletedAtMap[candles.interval] = candles.latest.createdAt
+    }
+
+    private fun makeMessage(candles: Candles): String {
+        val openPrice = candles.latest.openPrice
+        val interval = candles.interval
+
+        if (interval.inWholeMinutes == 5L) {
+            return "${this.strategy.title}-$interval 발생, 현재 시가: $openPrice"
+        }
+
+        if (interval.inWholeMinutes == 15L) {
+            return "🎆 ${this.strategy.title}-$interval 발생, 현재 시가: $openPrice"
+        }
+
+        return "${this.strategy.title} 발생, 현재 시가: $openPrice"
     }
 
     companion object {
