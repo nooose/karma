@@ -1,12 +1,14 @@
 package com.karma.core.chart.domain
 
 import io.kotest.assertions.assertSoftly
+import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import java.time.LocalDateTime
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
+@DisplayName("봉 컬렉션 모델 테스트")
 class CandlesTest : StringSpec({
     val baseTime = LocalDateTime.of(2025, 1, 1, 10, 0, 0)
     val candle30m = candleFixture(

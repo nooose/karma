@@ -38,6 +38,6 @@ class CandlePollingService(
 
     companion object {
         private const val COIN_NAME = "XRP-USDT-SWAP"
-        private val INTERVALS = listOf(5, 15).map { it.toDuration(MINUTES) }
+        val INTERVALS = listOf(5, 15).map { it.toDuration(MINUTES) }
     }
 }

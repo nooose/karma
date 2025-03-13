@@ -11,7 +11,7 @@ class SchedulingConfig {
     @Bean
     fun taskScheduler(): ThreadPoolTaskScheduler {
         val scheduler = ThreadPoolTaskScheduler()
-        scheduler.poolSize = 10
+        scheduler.poolSize = 5
         scheduler.setThreadNamePrefix("scheduler-")
         scheduler.isDaemon = true
         return scheduler

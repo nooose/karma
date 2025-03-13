@@ -1,23 +1,26 @@
 package com.karma.core.chart.application
 
+import com.karma.core.chart.application.CandlePollingService.Companion.INTERVALS
 import com.karma.core.chart.domain.BuySignalEvent
 import com.karma.core.chart.domain.CandleRepository
 import com.karma.core.chart.domain.CandleStrategy
 import com.karma.core.chart.domain.Candles
 import com.karma.core.chart.foundation.BATCH_INTERVAL_MS
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import kotlin.time.Duration
-import kotlin.time.DurationUnit.MINUTES
-import kotlin.time.toDuration
 
 @Component
 class CandleMonitorService(
     private val candleRepository: CandleRepository,
-    private val strategy: CandleStrategy,
+    @Qualifier("consecutiveDownCandlesStrategy")
+    private val consecutiveDownStrategy: CandleStrategy,
+    @Qualifier("latestDownCandlesStrategy")
+    private val latestDownStrategy: CandleStrategy,
     private val eventPublisher: ApplicationEventPublisher,
 ) {
     private val lastCompletedAtMap : MutableMap<Duration, LocalDateTime> = mutableMapOf()
@@ -26,21 +29,29 @@ class CandleMonitorService(
 
     @Scheduled(fixedRate = BATCH_INTERVAL_MS)
     suspend fun monitorCandles() {
-        INTERVALS.forEach { interval ->
-            val candles = candleRepository.getLatest(interval)
-            monitor(candles)
+        val candleData = INTERVALS.associateWith { candleRepository.getLatest(it) }
+
+        val candles5m = candleData[INTERVALS[0]] ?: return
+        val candles15m = candleData[INTERVALS[1]] ?: return
+
+        val satisfied5m = monitor(candles5m)
+        monitor(candles15m)
+
+        if (satisfied5m && candles15m.isSatisfied(latestDownStrategy)) {
+            val message = "⚠️ 5분봉 감지! 하지만 15분봉이 약세 흐름, 추세를 지켜보세요."
+            eventPublisher.publishEvent(BuySignalEvent(message))
         }
     }
 
-    private fun monitor(candles: Candles) {
+    private fun monitor(candles: Candles): Boolean {
         if (shouldSkip(candles)) {
-            return
+            return false
         }
 
-        val latestCandle = candles.latest
         markAsCompleted(candles)
-        val message = "${this.strategy.title}-${candles.interval} 발생, 현재 시가: ${latestCandle.openPrice}"
+        val message = makeMessage(candles)
         eventPublisher.publishEvent(BuySignalEvent(message))
+        return true
     }
 
     private fun shouldSkip(candles: Candles): Boolean {
@@ -50,7 +61,7 @@ class CandleMonitorService(
         }
 
         val withoutLatest = candles.withoutLatest
-        return !withoutLatest.isSatisfied(strategy)
+        return !withoutLatest.isSatisfied(consecutiveDownStrategy)
     }
 
     private fun markAsCompleted(candles: Candles) {
@@ -61,18 +72,11 @@ class CandleMonitorService(
         val openPrice = candles.latest.openPrice
         val interval = candles.interval
 
-        if (interval.inWholeMinutes == 5L) {
-            return "${this.strategy.title}-$interval 발생, 현재 시가: $openPrice"
+        val strategyTitle = consecutiveDownStrategy.title
+        return when (interval) {
+            INTERVALS[0] -> "$strategyTitle-$interval 발생, 현재 시가: $openPrice"
+            INTERVALS[1] -> "🎆 $strategyTitle-$interval 발생, 현재 시가: $openPrice"
+            else -> "$strategyTitle 발생, 현재 시가: $openPrice"
         }
-
-        if (interval.inWholeMinutes == 15L) {
-            return "🎆 ${this.strategy.title}-$interval 발생, 현재 시가: $openPrice"
-        }
-
-        return "${this.strategy.title} 발생, 현재 시가: $openPrice"
-    }
-
-    companion object {
-        private val INTERVALS = listOf(5, 15).map { it.toDuration(MINUTES) }
     }
 }

@@ -19,6 +19,8 @@ class Candles(
         get() = Candles(this.interval, this.values.drop(1))
     val isEmpty: Boolean
         get() = this.values.isEmpty()
+    val size: Int
+        get() = this.values.size
 
     fun isSatisfied(strategy: CandleStrategy): Boolean {
         return strategy.isSatisfied(values)
