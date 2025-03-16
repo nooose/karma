@@ -5,7 +5,6 @@ import com.karma.core.chart.domain.BuySignalEvent
 import com.karma.core.chart.domain.CandleRepository
 import com.karma.core.chart.domain.CandleStrategy
 import com.karma.core.chart.domain.Candles
-import com.karma.core.chart.foundation.BATCH_INTERVAL_MS
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.ApplicationEventPublisher
@@ -14,6 +13,9 @@ import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import kotlin.time.Duration
 
+/**
+ * 봉 모니터링 배치 서비스
+ */
 @Component
 class CandleMonitorService(
     private val candleRepository: CandleRepository,

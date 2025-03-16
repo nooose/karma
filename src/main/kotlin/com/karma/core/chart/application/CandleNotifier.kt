@@ -7,13 +7,15 @@ import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 
+/**
+ * 봉 이벤트 알림기
+ */
 @Component
 class CandleNotifier(
     private val messageSender: CandleMessageSender,
 ) {
 
     private val log = KotlinLogging.logger {}
-
 
     @Async
     @EventListener

@@ -3,7 +3,6 @@ package com.karma.core.chart.application
 import com.karma.core.chart.domain.CandleClient
 import com.karma.core.chart.domain.CandleRepository
 import com.karma.core.chart.domain.Candles
-import com.karma.core.chart.foundation.BATCH_INTERVAL_MS
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -11,6 +10,9 @@ import kotlin.time.Duration
 import kotlin.time.DurationUnit.MINUTES
 import kotlin.time.toDuration
 
+/**
+ * 봉 갱신 배치 서비스
+ */
 @Service
 class CandlePollingService(
     private val candleClient: CandleClient,
