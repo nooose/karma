@@ -1,5 +1,6 @@
 package com.karma.core.chart.application
 
+import com.karma.core.chart.application.xrp.XRPCandleMonitorService
 import com.karma.core.chart.domain.*
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.DescribeSpec
@@ -17,7 +18,7 @@ class CandleMonitorServiceTest : DescribeSpec({
     val eventPublisher = mockk<ApplicationEventPublisher>()
     val interval = 0.toDuration(DurationUnit.MINUTES)
 
-    val sut = CandleMonitorService(
+    val sut = XRPCandleMonitorService(
         candleRepository = candleRepository,
         eventPublisher = eventPublisher,
         consecutiveDownStrategy = consecutiveDownStrategy,
@@ -39,9 +40,11 @@ class CandleMonitorServiceTest : DescribeSpec({
 
         describe("봉 전략이 거짓이라면") {
             val candles = Candles(
+                coinSymbol = CoinSymbol.UNKNOWN,
                 interval = 0.toDuration(DurationUnit.MINUTES),
                 listOf(
                     candleFixture(
+
                         openPrice = 100,
                         closePrice = 200
                     )
@@ -59,6 +62,7 @@ class CandleMonitorServiceTest : DescribeSpec({
 
         describe("연속 하락 전략이 참이면") {
             val candles = Candles(
+                coinSymbol = CoinSymbol.UNKNOWN,
                 interval = interval,
                 values = listOf(
                     candleFixture(
@@ -68,8 +72,16 @@ class CandleMonitorServiceTest : DescribeSpec({
                 )
             )
             every { candleRepository.getLatest(any()) } returnsMany listOf(
-                Candles(30.toDuration(DurationUnit.MINUTES), candles.values),
-                Candles(35.toDuration(DurationUnit.MINUTES), candles.values)
+                Candles(
+                    coinSymbol = CoinSymbol.UNKNOWN,
+                    interval = 30.toDuration(DurationUnit.MINUTES),
+                    values = candles.values,
+                ),
+                Candles(
+                    coinSymbol = CoinSymbol.UNKNOWN,
+                    interval = 35.toDuration(DurationUnit.MINUTES),
+                    values = candles.values,
+                )
             )
             every { consecutiveDownStrategy.isSatisfied(any()) } returns true
             every { latestDownStrategy.isSatisfied(any()) } returns false
@@ -84,6 +96,7 @@ class CandleMonitorServiceTest : DescribeSpec({
 
         describe("연속 하락 전략이 참이고, 최신 하락 전략도 참이면") {
             val candles = Candles(
+                coinSymbol = CoinSymbol.UNKNOWN,
                 interval = interval,
                 values = listOf(
                     candleFixture(
@@ -93,8 +106,16 @@ class CandleMonitorServiceTest : DescribeSpec({
                 )
             )
             every { candleRepository.getLatest(any()) } returnsMany listOf(
-                Candles(10.toDuration(DurationUnit.MINUTES), candles.values),
-                Candles(25.toDuration(DurationUnit.MINUTES), candles.values)
+                Candles(
+                    coinSymbol = CoinSymbol.UNKNOWN,
+                    interval = 10.toDuration(DurationUnit.MINUTES),
+                    values = candles.values
+                ),
+                Candles(
+                    coinSymbol = CoinSymbol.UNKNOWN,
+                    interval = 25.toDuration(DurationUnit.MINUTES),
+                    values = candles.values,
+                )
             )
             every { consecutiveDownStrategy.isSatisfied(any()) } returns true
             every { latestDownStrategy.isSatisfied(any()) } returns true

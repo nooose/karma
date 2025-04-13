@@ -1,20 +1,22 @@
-package com.karma.core.chart.application
+package com.karma.core.chart.application.xrp
 
+import com.karma.core.chart.application.BATCH_INTERVAL_MS
 import com.karma.core.chart.domain.CandleClient
 import com.karma.core.chart.domain.CandleRepository
 import com.karma.core.chart.domain.Candles
+import com.karma.core.chart.domain.CoinSymbol
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import kotlin.time.Duration
-import kotlin.time.DurationUnit.MINUTES
+import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 /**
  * 봉 갱신 배치 서비스
  */
 @Service
-class CandlePollingService(
+class XRPCandlePollingService(
     private val candleClient: CandleClient,
     private val candleRepository: CandleRepository,
 ) {
@@ -22,24 +24,23 @@ class CandlePollingService(
     private val log = KotlinLogging.logger {}
 
     @Scheduled(fixedRate = BATCH_INTERVAL_MS)
-    suspend fun run() {
+    fun run() {
         for (interval in INTERVALS) {
             val candles = getCandles(interval)
             candleRepository.refresh(candles)
         }
     }
 
-    private suspend fun getCandles(interval: Duration): Candles {
+    private fun getCandles(interval: Duration): Candles {
         try {
-            return candleClient.getCandles(COIN_NAME, interval)
+            return candleClient.getCandles(CoinSymbol.XRP, interval)
         } catch (e: Exception) {
-            log.error { "봉 목록 조회에 실패하였습니다. ${e.stackTraceToString()}" }
-            return Candles.EMPTY
+            log.error(e) { "봉 목록 조회에 실패하였습니다." }
+            return Candles.Companion.EMPTY
         }
     }
 
     companion object {
-        private const val COIN_NAME = "XRP-USDT-SWAP"
-        val INTERVALS = listOf(5, 15).map { it.toDuration(MINUTES) }
+        val INTERVALS = listOf(5, 15).map { it.toDuration(DurationUnit.MINUTES) }
     }
 }

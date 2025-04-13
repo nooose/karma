@@ -1,10 +1,12 @@
-package com.karma.core.chart.application
+package com.karma.core.chart.application.xrp
 
-import com.karma.core.chart.application.CandlePollingService.Companion.INTERVALS
+import com.karma.core.chart.application.BATCH_INTERVAL_MS
+import com.karma.core.chart.application.bit.BitCandlePollingService
 import com.karma.core.chart.domain.BuySignalEvent
 import com.karma.core.chart.domain.CandleRepository
 import com.karma.core.chart.domain.CandleStrategy
 import com.karma.core.chart.domain.Candles
+import com.karma.core.chart.domain.CoinSymbol
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.ApplicationEventPublisher
@@ -17,7 +19,7 @@ import kotlin.time.Duration
  * 봉 모니터링 배치 서비스
  */
 @Component
-class CandleMonitorService(
+class XRPCandleMonitorService(
     private val candleRepository: CandleRepository,
     @Qualifier("consecutiveDownCandlesStrategy")
     private val consecutiveDownStrategy: CandleStrategy,
@@ -31,10 +33,12 @@ class CandleMonitorService(
 
     @Scheduled(fixedRate = BATCH_INTERVAL_MS)
     fun monitorCandles() {
-        val candleData = INTERVALS.associateWith { candleRepository.getLatest(it) }
+        val candleData = BitCandlePollingService.Companion.INTERVALS.associateWith {
+            candleRepository.getLatest(CoinSymbol.XRP, it)
+        }
 
-        val candles5m = candleData[INTERVALS[0]] ?: return
-        val candles15m = candleData[INTERVALS[1]] ?: return
+        val candles5m = candleData[BitCandlePollingService.Companion.INTERVALS[0]] ?: return
+        val candles15m = candleData[BitCandlePollingService.Companion.INTERVALS[1]] ?: return
 
         val satisfied5m = monitor(candles5m)
         monitor(candles15m)
@@ -76,8 +80,8 @@ class CandleMonitorService(
 
         val strategyTitle = consecutiveDownStrategy.title
         return when (interval) {
-            INTERVALS[0] -> "$strategyTitle-$interval 발생, 현재 시가: $openPrice"
-            INTERVALS[1] -> "🎆 $strategyTitle-$interval 발생, 현재 시가: $openPrice"
+            BitCandlePollingService.Companion.INTERVALS[0] -> "$strategyTitle-$interval 발생, 현재 시가: $openPrice"
+            BitCandlePollingService.Companion.INTERVALS[1] -> "🎆 $strategyTitle-$interval 발생, 현재 시가: $openPrice"
             else -> "$strategyTitle 발생, 현재 시가: $openPrice"
         }
     }

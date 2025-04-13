@@ -15,5 +15,5 @@ interface CandleClient {
      * @param limit 조회 갯수
      * @return 봉 목록
      */
-    suspend fun getCandles(symbol: String, interval: Duration, limit: Int? = null): Candles
+    fun getCandles(symbol: CoinSymbol, interval: Duration, limit: Int? = null): Candles
 }

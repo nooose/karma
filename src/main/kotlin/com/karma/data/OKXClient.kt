@@ -3,6 +3,7 @@ package com.karma.data
 import com.karma.core.chart.domain.Candle
 import com.karma.core.chart.domain.CandleClient
 import com.karma.core.chart.domain.Candles
+import com.karma.core.chart.domain.CoinSymbol
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
@@ -20,12 +21,12 @@ class OKXClient(
 
     private val log = KotlinLogging.logger {}
 
-    override suspend fun getCandles(symbol: String, interval: Duration, limit: Int?): Candles {
+    override fun getCandles(symbol: CoinSymbol, interval: Duration, limit: Int?): Candles {
         val response: Map<*, *> = client.get()
             .uri { uriBuilder ->
                 uriBuilder.path("/api/v5/market/candles")
                     .queryParam("category", "linear")
-                    .queryParam("instId", symbol)
+                    .queryParam("instId", symbol.okxSymbol)
                     .queryParam("bar", interval.toString())
                     .queryParam("limit", limit ?: 5)
                     .build()
@@ -44,8 +45,23 @@ class OKXClient(
                 lowPrice = (it[3] as String).toDouble(),
                 closePrice = (it[4] as String).toDouble(),
             )
-        }.let { Candles(interval, it) }
+        }.let {
+            Candles(
+                coinSymbol = symbol,
+                interval = interval,
+                _values = it
+            )
+        }
     }
+
+    private val CoinSymbol.okxSymbol: String
+        get() {
+            return when (this) {
+                CoinSymbol.UNKNOWN -> "UNKNOWN"
+                CoinSymbol.BIT -> "BTC-USDT-SWAP"
+                CoinSymbol.XRP -> "XRP-USDT-SWAP"
+            }
+        }
 
     private fun toLocalDateTime(timeStamp: Long): LocalDateTime {
         return Instant.ofEpochMilli(timeStamp)

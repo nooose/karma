@@ -2,20 +2,31 @@ package com.karma.data
 
 import com.karma.core.chart.domain.CandleRepository
 import com.karma.core.chart.domain.Candles
+import com.karma.core.chart.domain.CoinSymbol
 import org.springframework.stereotype.Repository
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration
 
 @Repository
 class InMemoryCandleRepository : CandleRepository {
 
-    private val candleMap: MutableMap<Duration, Candles> = ConcurrentHashMap()
+    private val bitCandleMap: MutableMap<Duration, Candles> = mutableMapOf()
+    private val xrpCandleMap: MutableMap<Duration, Candles> = mutableMapOf()
 
+    @Synchronized
     override fun refresh(candles: Candles) {
-        this.candleMap[candles.interval] = candles
+        when (candles.coinSymbol) {
+            CoinSymbol.BIT -> this.bitCandleMap[candles.interval] = candles
+            CoinSymbol.XRP -> this.xrpCandleMap[candles.interval] = candles
+            else -> return
+        }
     }
 
-    override fun getLatest(interval: Duration): Candles {
-        return this.candleMap[interval] ?: Candles.EMPTY
+    @Synchronized
+    override fun getLatest(coinSymbol: CoinSymbol, interval: Duration): Candles {
+        return when (coinSymbol) {
+            CoinSymbol.BIT -> this.bitCandleMap[interval]
+            CoinSymbol.XRP -> this.xrpCandleMap[interval]
+            else -> null
+        } ?: Candles.EMPTY
     }
 }

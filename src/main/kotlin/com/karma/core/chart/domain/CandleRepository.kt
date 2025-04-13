@@ -8,5 +8,5 @@ import kotlin.time.Duration
 interface CandleRepository {
 
     fun refresh(candles: Candles)
-    fun getLatest(interval: Duration): Candles
+    fun getLatest(symbol: CoinSymbol, interval: Duration): Candles
 }

@@ -26,7 +26,7 @@ class RuleReminder(
     private val log = KotlinLogging.logger {}
 
     override fun run(args: ApplicationArguments) {
-        log.info { "Running rule reminder" }
+        log.info { "룰 리마인더 실행" }
         CoroutineScope(Dispatchers.Default).launch {
             alertLoop()
         }
