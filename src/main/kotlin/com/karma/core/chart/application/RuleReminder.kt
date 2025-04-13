@@ -2,18 +2,9 @@ package com.karma.core.chart.application
 
 import com.karma.core.chart.domain.CandleMessageSender
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import org.springframework.boot.ApplicationArguments
-import org.springframework.boot.ApplicationRunner
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import kotlin.random.Random
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 /**
  * 원칙 리마인더 배치 서비스

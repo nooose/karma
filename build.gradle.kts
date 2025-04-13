@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.karma"
-version = "0.0.1"
+version = "0.0.2"
 
 java {
 	toolchain {
@@ -25,21 +25,15 @@ val kotestSpringExtensionVersion = "1.3.0"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-actuator")
-	implementation("org.springframework.boot:spring-boot-starter-validation")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 	implementation("io.github.oshai:kotlin-logging-jvm:$kotlinLoggingVersion")
 
 	runtimeOnly("com.h2database:h2")
-	runtimeOnly("io.r2dbc:r2dbc-h2")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-	testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
 	testImplementation("io.mockk:mockk:$mockkVersion")
 	testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
 	testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")

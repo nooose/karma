@@ -47,7 +47,7 @@ data class Candles(
     }
 
     override fun toString(): String {
-        return "[$interval]$values"
+        return "[$coinSymbol-$interval]$values"
     }
 
     companion object {
