@@ -1,6 +1,7 @@
 package com.karma.core.chart.application
 
 import com.karma.core.chart.domain.BuySignalEvent
+import com.karma.core.chart.domain.CandleRefreshedEvent
 import com.karma.core.chart.domain.CandleMessageSender
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener

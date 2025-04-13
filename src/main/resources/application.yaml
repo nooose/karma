@@ -1,4 +1,7 @@
 karma:
+  refresh:
+    five-cron: 1 0/5 * * * *
+    fifteen-cron: 1 0/15 * * * *
   okx:
     host: https://www.okx.com
   telegram:
@@ -6,7 +9,7 @@ karma:
     bot-token: ${TELEGRAM_BOT_TOKEN}
     chat-id: ${TELEGRAM_CHAT_ID}
   rule-reminder:
-    enabled: false
+    cron: 0 0 0/6 * * *
 
 spring:
   application:

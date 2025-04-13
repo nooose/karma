@@ -1,3 +1,7 @@
 package com.karma.core.chart.application
 
-const val BATCH_INTERVAL_MS: Long = 500L
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
+
+val INTERVAL_5M = 5.toDuration(DurationUnit.MINUTES)
+val INTERVAL_15M = 15.toDuration(DurationUnit.MINUTES)

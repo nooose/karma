@@ -1,6 +1,5 @@
 package com.karma.core.chart.domain
 
-import java.time.LocalDateTime
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -13,7 +12,7 @@ data class Candles(
     val interval: Duration,
     private val _values: List<Candle>,
 ) {
-    val values: List<Candle> = _values.sortedByDescending { it.createdAt }
+    val values: List<Candle> = _values.sortedDescending()
     val latest: Candle
         get() = this.values.first()
     val withoutLatest: Candles
@@ -27,8 +26,24 @@ data class Candles(
         return strategy.isSatisfied(values)
     }
 
-    fun containsCreatedAt(createdAt: LocalDateTime): Boolean {
-        return values.map { it.createdAt }.contains(createdAt)
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Candles
+
+        if (coinSymbol != other.coinSymbol) return false
+        if (interval != other.interval) return false
+        if (values != other.values) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = coinSymbol.hashCode()
+        result = 31 * result + interval.hashCode()
+        result = 31 * result + values.hashCode()
+        return result
     }
 
     override fun toString(): String {

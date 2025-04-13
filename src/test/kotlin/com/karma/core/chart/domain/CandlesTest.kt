@@ -48,6 +48,7 @@ class CandlesTest : StringSpec({
 fun candlesFixture(vararg candles: Candle): Candles {
     return Candles(
         interval = 0.toDuration(DurationUnit.MINUTES),
-        values = candles.toList(),
+        _values = candles.toList(),
+        coinSymbol = CoinSymbol.UNKNOWN,
     )
 }

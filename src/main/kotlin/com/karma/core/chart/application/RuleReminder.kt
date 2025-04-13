@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import kotlin.random.Random
 import kotlin.time.DurationUnit
@@ -17,31 +18,17 @@ import kotlin.time.toDuration
 /**
  * 원칙 리마인더 배치 서비스
  */
-@ConditionalOnProperty("karma.rule-reminder.enabled", havingValue = "true")
 @Component
 class RuleReminder(
     private val messageSender: CandleMessageSender,
-) : ApplicationRunner {
+) {
 
     private val log = KotlinLogging.logger {}
 
-    override fun run(args: ApplicationArguments) {
-        log.info { "룰 리마인더 실행" }
-        CoroutineScope(Dispatchers.Default).launch {
-            alertLoop()
-        }
-    }
-
-    private suspend fun alertLoop() {
-        while (true) {
-            val nextDelayHours = if (Random.nextBoolean()) 1 else 3
-            log.info { "다음 알림은 ${nextDelayHours}시간 후입니다."}
-
-            delay(nextDelayHours.toDuration(DurationUnit.HOURS))
-
-            val ruleIndex = Random.nextInt(0, RULES.size)
-            messageSender.send(RULES[ruleIndex])
-        }
+    @Scheduled(cron = "\${karma.rule-reminder.cron}")
+    fun alert() {
+        val ruleIndex = Random.nextInt(0, RULES.size)
+        messageSender.send(RULES[ruleIndex])
     }
 
     companion object {
