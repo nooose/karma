@@ -1,4 +1,4 @@
-package com.karma.data
+package com.karma.data.client
 
 import com.karma.core.chart.domain.Candle
 import com.karma.core.chart.domain.CandleClient
@@ -11,6 +11,7 @@ import org.springframework.web.client.RestClient
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import kotlin.collections.get
 import kotlin.time.Duration
 
 @Component

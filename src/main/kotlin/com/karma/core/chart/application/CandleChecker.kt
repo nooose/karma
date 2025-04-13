@@ -1,4 +1,4 @@
-package com.karma.core.chart.application.xrp
+package com.karma.core.chart.application
 
 import com.karma.core.chart.domain.BuySignalEvent
 import com.karma.core.chart.domain.CandleRefreshedEvent
@@ -12,39 +12,31 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
+import kotlin.time.toJavaDuration
 
 /**
- * XRP 매수 판단 배치 서비스
+ * 매수 판단 배치 서비스
  */
 @Service
-class XRPCandleChecker(
-    @Qualifier("consecutiveDownCandlesStrategy")
-    private val consecutiveDownStrategy: CandleStrategy,
+class CandleChecker(
+    private val strategy: CandleStrategy,
     private val repository: CandleRepository,
+    private val formatter: CandlesAlertFormatter,
     private val eventPublisher: ApplicationEventPublisher,
 ) {
 
     private val log = KotlinLogging.logger {}
 
     @Async
-    @EventListener(condition = "#event.symbol == 'XRP'")
+    @EventListener
     fun handle(event: CandleRefreshedEvent) {
-        log.info { "$event 갱신 완료" }
-        val candles = repository.getLatest(CoinSymbol.XRP, event.interval)
-
-        if (!candles.isSatisfied(consecutiveDownStrategy)) {
+        val candles = repository.getLatest(event.symbol, event.interval)
+        val withoutLatest = candles.withoutLatest
+        if (!withoutLatest.isSatisfied(strategy)) {
             return
         }
 
-        val message = makeMessage(candles)
+        val message = formatter.format(candles = candles)
         eventPublisher.publishEvent(BuySignalEvent(message = message))
-    }
-
-    private fun makeMessage(candles: Candles): String {
-        val openPrice = candles.latest.openPrice
-        val interval = candles.interval
-
-        val strategyTitle = consecutiveDownStrategy.title
-        return "$strategyTitle-$interval 발생, 현재 시가: $openPrice"
     }
 }

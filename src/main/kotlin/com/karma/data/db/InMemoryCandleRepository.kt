@@ -1,4 +1,4 @@
-package com.karma.data
+package com.karma.data.db
 
 import com.karma.core.chart.domain.CandleRepository
 import com.karma.core.chart.domain.Candles
@@ -27,6 +27,6 @@ class InMemoryCandleRepository : CandleRepository {
             CoinSymbol.BIT -> this.bitCandleMap[interval]
             CoinSymbol.XRP -> this.xrpCandleMap[interval]
             else -> null
-        } ?: Candles.EMPTY
+        } ?: Candles.Companion.EMPTY
     }
 }

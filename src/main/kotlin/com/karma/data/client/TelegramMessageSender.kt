@@ -1,4 +1,4 @@
-package com.karma.data
+package com.karma.data.client
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.karma.core.chart.domain.CandleMessageSender
@@ -31,9 +31,7 @@ class TelegramMessageSender(
             .retrieve()
             .toBodilessEntity()
 
-        if (response.statusCode.is2xxSuccessful) {
-            log.info { "텔레그램 메시지 전송 성공" }
-        } else {
+        if (response.statusCode.isError) {
             log.error { "텔레그램 메시지 전송 실패" }
         }
     }

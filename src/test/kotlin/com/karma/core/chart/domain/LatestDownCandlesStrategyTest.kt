@@ -5,7 +5,7 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
 @DisplayName("연속 음봉 전략 테스트")
-class LastDownCandlesStrategyTest : StringSpec({
+class LatestDownCandlesStrategyTest : StringSpec({
 
     val strategy = LatestDownCandlesStrategy(2)
 

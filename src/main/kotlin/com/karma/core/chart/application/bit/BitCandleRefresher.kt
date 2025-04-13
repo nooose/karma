@@ -27,9 +27,9 @@ class BitCandleRefresher(
 
     @Scheduled(cron = "\${karma.refresh.five-cron}")
     fun run5m() {
-        log.info { "비트코인 갱신 시작" }
         val candles = getCandles(INTERVAL_5M)
         candleRepository.refresh(candles)
+        log.info { "$candles 갱신 완료" }
 
         val event = CandleRefreshedEvent(
             symbol = CoinSymbol.BIT,
@@ -40,9 +40,9 @@ class BitCandleRefresher(
 
     @Scheduled(cron = "\${karma.refresh.fifteen-cron}")
     fun run15m() {
-        log.info { "비트코인 갱신 시작" }
         val candles = getCandles(INTERVAL_15M)
         candleRepository.refresh(candles)
+        log.info { "$candles 갱신 완료" }
 
         val event = CandleRefreshedEvent(
             symbol = CoinSymbol.BIT,

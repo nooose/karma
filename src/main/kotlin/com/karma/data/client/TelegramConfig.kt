@@ -1,4 +1,4 @@
-package com.karma.data
+package com.karma.data.client
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
