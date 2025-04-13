@@ -2,7 +2,7 @@ package com.karma.data
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
 
 @Configuration(proxyBeanMethods = false)
 class TelegramConfig(
@@ -10,8 +10,8 @@ class TelegramConfig(
 ) {
 
     @Bean
-    fun telegramWebClient(): WebClient {
-        return WebClient.builder()
+    fun telegramWebClient(): RestClient {
+        return RestClient.builder()
             .baseUrl(telegramProperties.host)
             .build()
     }

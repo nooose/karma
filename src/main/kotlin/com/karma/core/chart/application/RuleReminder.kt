@@ -2,14 +2,17 @@ package com.karma.core.chart.application
 
 import com.karma.core.chart.domain.CandleMessageSender
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-import java.time.Duration
 import kotlin.random.Random
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 /**
  * 원칙 리마인더 배치 서비스
@@ -24,16 +27,21 @@ class RuleReminder(
 
     override fun run(args: ApplicationArguments) {
         log.info { "Running rule reminder" }
-        Flux.just(Unit)
-            .expand {
-                val delay = Duration.ofHours(Random.nextLong(1, 3))
-                Mono.delay(delay).thenReturn(Unit)
-            }
-            .doOnNext {
-                val ruleIndex = Random.nextInt(0, RULES.size)
-                messageSender.send(RULES[ruleIndex])
-            }
-            .subscribe()
+        CoroutineScope(Dispatchers.Default).launch {
+            alertLoop()
+        }
+    }
+
+    private suspend fun alertLoop() {
+        while (true) {
+            val nextDelayHours = if (Random.nextBoolean()) 1 else 3
+            log.info { "다음 알림은 ${nextDelayHours}시간 후입니다."}
+
+            delay(nextDelayHours.toDuration(DurationUnit.HOURS))
+
+            val ruleIndex = Random.nextInt(0, RULES.size)
+            messageSender.send(RULES[ruleIndex])
+        }
     }
 
     companion object {

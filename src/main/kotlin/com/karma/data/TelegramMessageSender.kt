@@ -5,12 +5,12 @@ import com.karma.core.chart.domain.CandleMessageSender
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
 
 @Component
 class TelegramMessageSender(
     @Qualifier("telegramWebClient")
-    private val client: WebClient,
+    private val client: RestClient,
     private val properties: TelegramProperties,
 ) : CandleMessageSender {
 
@@ -22,17 +22,20 @@ class TelegramMessageSender(
             text = message,
         )
 
-        client.post()
+        val response = client.post()
             .uri { builder ->
                 builder.path("/bot${properties.botToken}/sendMessage")
                     .build()
             }
-            .bodyValue(payload)
+            .body(payload)
             .retrieve()
-            .bodyToMono(Unit::class.java)
-            .doOnSuccess { log.info { "\"$message\" 메시지 전송됨" } }
-            .doOnError { log.error(it) { "텔레그램 메시지 전송 실패" } }
-            .subscribe()
+            .toBodilessEntity()
+
+        if (response.statusCode.is2xxSuccessful) {
+            log.info { "텔레그램 메시지 전송 성공" }
+        } else {
+            log.error { "텔레그램 메시지 전송 실패" }
+        }
     }
 
     data class Payload(

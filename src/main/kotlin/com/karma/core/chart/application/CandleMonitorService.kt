@@ -30,7 +30,7 @@ class CandleMonitorService(
     private val log = KotlinLogging.logger {}
 
     @Scheduled(fixedRate = BATCH_INTERVAL_MS)
-    suspend fun monitorCandles() {
+    fun monitorCandles() {
         val candleData = INTERVALS.associateWith { candleRepository.getLatest(it) }
 
         val candles5m = candleData[INTERVALS[0]] ?: return

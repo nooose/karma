@@ -4,10 +4,9 @@ import com.karma.core.chart.domain.Candle
 import com.karma.core.chart.domain.CandleClient
 import com.karma.core.chart.domain.Candles
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -16,7 +15,7 @@ import kotlin.time.Duration
 @Component
 class OKXClient(
     @Qualifier("okxWebClient")
-    private val client: WebClient,
+    private val client: RestClient,
 ) : CandleClient {
 
     private val log = KotlinLogging.logger {}
@@ -32,8 +31,7 @@ class OKXClient(
                     .build()
             }
             .retrieve()
-            .bodyToMono(Map::class.java)
-            .awaitSingleOrNull() ?: throw IllegalStateException("OKX 마켓 조회 API 요청을 처리할 수 없습니다.")
+            .body(Map::class.java) ?: throw IllegalStateException("OKX 마켓 조회 API 요청을 처리할 수 없습니다.")
 
         val candles = response["data"] as List<*>
 
