@@ -32,7 +32,16 @@ class CandleChecker(
             return
         }
 
+        val latest = candles.latest
+        if (latest.changeRate > THRESHOLD_CHANGE_RATE) {
+            return
+        }
+        
         val message = formatter.format(candles = candles)
         eventPublisher.publishEvent(BuySignalEvent(message = message))
+    }
+
+    companion object {
+        private const val THRESHOLD_CHANGE_RATE = 0.0010
     }
 }

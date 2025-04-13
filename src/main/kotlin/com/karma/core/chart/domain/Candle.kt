@@ -18,6 +18,7 @@ data class Candle(
     val isDown: Boolean get() = openPrice > closePrice
     val isDoji:  Boolean get() = openPrice == closePrice
     val diff = abs(openPrice - closePrice)
+    val changeRate = (closePrice - openPrice) / openPrice
 
     override fun compareTo(other: Candle): Int {
         return createdAt.compareTo(other.createdAt)
