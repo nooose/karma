@@ -2,21 +2,15 @@ package com.karma.core.chart.application.bit
 
 import com.karma.core.chart.application.INTERVAL_15M
 import com.karma.core.chart.application.INTERVAL_5M
-import com.karma.core.chart.domain.CandleClient
-import com.karma.core.chart.domain.CandleRefreshedEvent
-import com.karma.core.chart.domain.CandleRepository
-import com.karma.core.chart.domain.Candles
-import com.karma.core.chart.domain.CoinSymbol
+import com.karma.core.chart.domain.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Scheduled
-import org.springframework.stereotype.Service
 import kotlin.time.Duration
 
 /**
  * 비트코인 봉 갱신 배치 서비스
  */
-@Service
 class BitCandleRefresher(
     private val candleClient: CandleClient,
     private val candleRepository: CandleRepository,
