@@ -42,6 +42,6 @@ class CandleChecker(
     }
 
     companion object {
-        private const val THRESHOLD_CHANGE_RATE = -0.0010
+        private const val THRESHOLD_CHANGE_RATE = -0.0005
     }
 }
